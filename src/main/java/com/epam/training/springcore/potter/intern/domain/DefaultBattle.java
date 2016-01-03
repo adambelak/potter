@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -23,13 +24,32 @@ public class DefaultBattle implements Battle {
 
     @Override
     public void fight() {
-        while (hasGoodWizard() && hasBadWizzard()) {
+        while (hasGoodWizard() && hasBadWizard()) {
+            shuffleWizards();
             badWizardAttack();
             goodWizardAttack();
         }
-        LOGGER.info("{} wizards win!", hasBadWizzard() ? "Bad" : "Good");
-        LOGGER.info("Good wizards: {}", goodWizards);
-        LOGGER.info("Bad wizards: {}", badWizards);
+    }
+
+    @Override
+    public boolean hasGoodWizard() {
+        Collections.shuffle(goodWizards);
+        return goodWizards.stream().filter(w -> w.canAttack()).findAny().isPresent();
+    }
+
+    @Override
+    public boolean hasBadWizard() {
+        return badWizards.stream().filter(w -> w.canAttack()).findAny().isPresent();
+    }
+
+    @Override
+    public List<Wizard> getGoodWizards() {
+        return new ArrayList<>(goodWizards);
+    }
+
+    @Override
+    public List<Wizard> getBadWizards() {
+        return new ArrayList<>(badWizards);
     }
 
     private void goodWizardAttack() {
@@ -60,15 +80,9 @@ public class DefaultBattle implements Battle {
         }
     }
 
-    private boolean hasBadWizzard() {
-        Collections.shuffle(badWizards);
-        return badWizards.stream().filter(w -> w.canAttack()).findAny().isPresent();
-    }
-
-    private boolean hasGoodWizard() {
+    private void shuffleWizards() {
         Collections.shuffle(goodWizards);
-        return goodWizards.stream().filter(w -> w.canAttack()).findAny().isPresent();
+        Collections.shuffle(badWizards);
     }
-
 
 }
