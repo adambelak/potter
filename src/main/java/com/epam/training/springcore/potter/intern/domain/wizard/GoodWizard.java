@@ -35,4 +35,9 @@ public class GoodWizard extends AbstractWizard {
     public void givePower(BigDecimal value) {
         setHealth(getHealth().add(value));
     }
+
+    @Override
+    public void die() {
+        super.die();
+    }
 }
